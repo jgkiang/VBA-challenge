@@ -58,26 +58,6 @@ Dim WS As Worksheet
             End If
         Next j
         
-        Cells(2, Column + 14).Value = "Greatest % Increase"
-        Cells(3, Column + 14).Value = "Greatest % Decrease"
-        Cells(4, Column + 14).Value = "Greatest Total Volume"
-        Cells(1, Column + 15).Value = "Ticker"
-        Cells(1, Column + 16).Value = "Value"
-        For Z = 2 To YCLastRow
-            If Cells(Z, Column + 10).Value = Application.WorksheetFunction.Max(WS.Range("K2:K" & YCLastRow)) Then
-                Cells(2, Column + 15).Value = Cells(Z, Column + 8).Value
-                Cells(2, Column + 16).Value = Cells(Z, Column + 10).Value
-                Cells(2, Column + 16).NumberFormat = "0.00%"
-            ElseIf Cells(Z, Column + 10).Value = Application.WorksheetFunction.Min(WS.Range("K2:K" & YCLastRow)) Then
-                Cells(3, Column + 15).Value = Cells(Z, Column + 8).Value
-                Cells(3, Column + 16).Value = Cells(Z, Column + 10).Value
-                Cells(3, Column + 16).NumberFormat = "0.00%"
-            ElseIf Cells(Z, Column + 11).Value = Application.WorksheetFunction.Max(WS.Range("L2:L" & YCLastRow)) Then
-                Cells(4, Column + 15).Value = Cells(Z, Column + 8).Value
-                Cells(4, Column + 16).Value = Cells(Z, Column + 11).Value
-            End If
-        Next Z
-        
     Next WS
         
 End Sub
