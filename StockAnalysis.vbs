@@ -1,39 +1,86 @@
 Sub StockAnalysis()
-
-Dim TotalVolume As Long
-Dim Ticker As Long
-Dim YearlyChange As Double
-Dim PercentChange As Double
-Dim CurrentOpen As Double
-
-TotalVolume = 0
-Ticker = 2
-CurrentOpen = Cells(2, 3)
-
-For i = 2 To 330
-    If Cells(i, 1).Value = Cells(i + 1, 1).Value Then
-       TotalVolume = Cells(i, 7).Value + TotalVolume
-
-    Else
-        YearlyChange = Cells(i, 3) - Cells(i, 6)
-            If YearlyChange > 0 Then
-            Cells(Ticker, 10).Interior.ColorIndex = 4
+  
+Dim WS As Worksheet
+    For Each WS In ActiveWorkbook.Worksheets
+    WS.Activate
+        LastRow = WS.Cells(Rows.Count, 1).End(xlUp).Row
+        Cells(1, "I").Value = "Ticker"
+        Cells(1, "J").Value = "Yearly Change"
+        Cells(1, "K").Value = "Percent Change"
+        Cells(1, "L").Value = "Total Stock Volume"
+        Dim Open_Price As Double
+        Dim Close_Price As Double
+        Dim Yearly_Change As Double
+        Dim Ticker_Name As String
+        Dim Percent_Change As Double
+        Dim Total_Volume As Double
+        Total_Volume = 0
+        Dim Row As Double
+        Row = 2
+        Dim Column As Integer
+        Column = 1
+        Dim i As Long
+  
+        Open_Price = Cells(2, Column + 2).Value
+        
+        For i = 2 To LastRow
+            If Cells(i + 1, Column).Value <> Cells(i, Column).Value Then
+                Ticker_Name = Cells(i, Column).Value
+                Cells(Row, Column + 8).Value = Ticker_Name
+                Close_Price = Cells(i, Column + 5).Value
+                Yearly_Change = Close_Price - Open_Price
+                Cells(Row, Column + 9).Value = Yearly_Change
+                If (Open_Price = 0 And Close_Price = 0) Then
+                    Percent_Change = 0
+                ElseIf (Open_Price = 0 And Close_Price <> 0) Then
+                    Percent_Change = 1
+                Else
+                    Percent_Change = Yearly_Change / Open_Price
+                    Cells(Row, Column + 10).Value = Percent_Change
+                    Cells(Row, Column + 10).NumberFormat = "0.00%"
+                End If
+                Total_Volume = Volume + Cells(i, Column + 6).Value
+                Cells(Row, Column + 11).Value = Total_Volume
+                Row = Row + 1
+                Open_Price = Cells(i + 1, Column + 2)
+                Total_Volume = 0
             Else
-            Cells(Ticker, 10).Interior.ColorIndex = 3
+                Total_Volume = Total_Volume + Cells(i, Column + 6).Value
             End If
-        PercentChange = YearlyChange / CurrentOpen
-        TotalVolume = Cells(i, 7).Value + TotalVolume
-        Cells(Ticker, 9).Value = Cells(i, 1).Value
-        Cells(Ticker, 10).Value = YearlyChange
-        Cells(Ticker, 11).Value = PercentChange
-        Cells(Ticker, 11).NumberFormat = "0.00%"
-        Cells(Ticker, 12).Value = TotalVolume
-        TotalVolume = 0
-        Ticker = Ticker + 1
-        CurrentOpen = Cells(i + 1, 3)
-    
-    End If
-
-Next i
-
+        Next i
+        
+        YCLastRow = WS.Cells(Rows.Count, Column + 8).End(xlUp).Row
+        For j = 2 To YCLastRow
+            If (Cells(j, Column + 9).Value > 0 Or Cells(j, Column + 9).Value = 0) Then
+                Cells(j, Column + 9).Interior.ColorIndex = 10
+            ElseIf Cells(j, Column + 9).Value < 0 Then
+                Cells(j, Column + 9).Interior.ColorIndex = 3
+            End If
+        Next j
+        
+        Cells(2, Column + 14).Value = "Greatest % Increase"
+        Cells(3, Column + 14).Value = "Greatest % Decrease"
+        Cells(4, Column + 14).Value = "Greatest Total Volume"
+        Cells(1, Column + 15).Value = "Ticker"
+        Cells(1, Column + 16).Value = "Value"
+        For Z = 2 To YCLastRow
+            If Cells(Z, Column + 10).Value = Application.WorksheetFunction.Max(WS.Range("K2:K" & YCLastRow)) Then
+                Cells(2, Column + 15).Value = Cells(Z, Column + 8).Value
+                Cells(2, Column + 16).Value = Cells(Z, Column + 10).Value
+                Cells(2, Column + 16).NumberFormat = "0.00%"
+            ElseIf Cells(Z, Column + 10).Value = Application.WorksheetFunction.Min(WS.Range("K2:K" & YCLastRow)) Then
+                Cells(3, Column + 15).Value = Cells(Z, Column + 8).Value
+                Cells(3, Column + 16).Value = Cells(Z, Column + 10).Value
+                Cells(3, Column + 16).NumberFormat = "0.00%"
+            ElseIf Cells(Z, Column + 11).Value = Application.WorksheetFunction.Max(WS.Range("L2:L" & YCLastRow)) Then
+                Cells(4, Column + 15).Value = Cells(Z, Column + 8).Value
+                Cells(4, Column + 16).Value = Cells(Z, Column + 11).Value
+            End If
+        Next Z
+        
+    Next WS
+        
 End Sub
+
+
+
